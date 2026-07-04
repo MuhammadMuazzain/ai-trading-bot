@@ -1,0 +1,7 @@
+[run]
+omit =
+    scripts/*
+    ai_trading_bot/templates/*
+    ai_trading_bot/vendor/*
+    ai_trading_bot/__main__.py
+    tests/*

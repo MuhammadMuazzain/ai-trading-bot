@@ -1,0 +1,47 @@
+FROM python:3.11.11-slim-bookworm as base
+
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONFAULTHANDLER=1
+ENV PATH=/home/botuser/.local/bin:$PATH
+ENV BOT_APP_ENV="docker"
+
+RUN mkdir /app \
+  && apt-get update \
+  && apt-get -y install sudo libatlas3-base libopenblas-dev curl sqlite3 libutf8proc-dev libsnappy-dev \
+  && apt-get clean \
+  && useradd -u 1000 -G sudo -U -m botuser \
+  && chown botuser:botuser /app \
+  && echo "botuser ALL=(ALL) NOPASSWD: /bin/chown" >> /etc/sudoers \
+  && pip install --upgrade pip
+
+WORKDIR /app
+
+FROM base as python-deps
+RUN apt-get update \
+  && apt-get -y install build-essential libssl-dev libffi-dev libgfortran5 pkg-config cmake gcc \
+  && apt-get clean \
+  && echo "[global]\nextra-index-url=https://www.piwheels.org/simple" > /etc/pip.conf
+
+COPY build_helpers/* /tmp/
+COPY --chown=botuser:botuser requirements.txt /app/
+USER botuser
+RUN pip install --user --no-cache-dir "numpy<2" \
+  && pip install --user --no-index --find-links /tmp/ pyarrow TA-Lib \
+  && pip install --user --no-cache-dir -r requirements.txt
+
+FROM base as runtime-image
+COPY --from=python-deps /usr/local/lib /usr/local/lib
+ENV LD_LIBRARY_PATH=/usr/local/lib
+COPY --from=python-deps --chown=botuser:botuser /home/botuser/.local /home/botuser/.local
+
+USER botuser
+COPY --chown=botuser:botuser . /app/
+
+RUN pip install -e . --user --no-cache-dir --no-build-isolation \
+  && mkdir /app/user_data/ \
+  && ai-trading-bot install-ui
+
+ENTRYPOINT ["ai-trading-bot"]
+CMD ["trade"]

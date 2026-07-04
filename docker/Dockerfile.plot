@@ -1,0 +1,14 @@
+FROM python:3.11-slim-bookworm
+
+WORKDIR /app
+
+COPY requirements.txt requirements-plot.txt /app/
+
+RUN pip install --upgrade pip \
+  && pip install -r requirements.txt --no-cache-dir \
+  && pip install -r requirements-plot.txt --no-cache-dir
+
+COPY . /app/
+RUN pip install -e . --no-cache-dir
+
+ENTRYPOINT ["ai-trading-bot"]

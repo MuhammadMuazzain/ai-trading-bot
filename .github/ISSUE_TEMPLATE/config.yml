@@ -1,0 +1,9 @@
+---
+blank_issues_enabled: false
+contact_links:
+  - name: Report an Issue
+    url: https://github.com/MuhammadMuazzain/ai-trading-bot/issues
+    about: Open a GitHub issue for bugs or questions
+  - name: Contact Maintainer
+    url: mailto:muhammadmuazzain07@gmail.com
+    about: Email Muhammad Muazzain directly

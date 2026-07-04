@@ -1,0 +1,13 @@
+[Unit]
+Description=AI Trading Bot Daemon
+After=network.target
+
+[Service]
+# Set WorkingDirectory and ExecStart to your file paths accordingly
+# NOTE: %h will be resolved to /home/<username>
+WorkingDirectory=%h/ai_trading_bot
+ExecStart=/usr/bin/ai-trading-bot trade
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

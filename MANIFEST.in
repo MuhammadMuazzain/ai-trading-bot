@@ -1,0 +1,9 @@
+include LICENSE
+include README.md
+recursive-include ai-trading-bot *.py
+recursive-include ai_trading_bot/templates/ *.j2 *.ipynb
+include ai_trading_bot/exchange/binance_leverage_tiers.json
+include ai_trading_bot/rpc/api_server/ui/fallback_file.html
+include ai_trading_bot/rpc/api_server/ui/favicon.ico
+
+prune tests
